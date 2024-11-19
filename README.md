@@ -1,1 +1,1 @@
-# vite-db
+# lite-db
