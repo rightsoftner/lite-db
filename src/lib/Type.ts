@@ -18,6 +18,9 @@ export const UserDetail = Type.Object({
 
 export type UserDetailType = Static<typeof UserDetail>;
 
+// RequestBody
+export type RequestBody = Static<typeof User> & Static<typeof UserDetail>;
+export type RequestBodyType = Static<typeof User>;
 
 // Profile
 export const Profile = Type.Object({
