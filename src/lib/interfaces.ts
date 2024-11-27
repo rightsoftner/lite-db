@@ -1,10 +1,10 @@
-import { UserType } from "../lib/Type";
+import { UserType, ResponseUserType } from "../lib/Type";
 
 interface IReply {
   201: {
     success: boolean;
     data: {
-      users: UserType[];
+      users: ResponseUserType[];
     };
   };
   302: { url: string };
