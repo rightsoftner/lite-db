@@ -4,6 +4,11 @@ import { User } from "../db/entity/User.entity";
 import { UserDetail } from "../db/entity/UserDetail.entity";
 import { IQuerystring, IReply, IdeleteReply } from "../lib/interfaces";
 
+import { 
+  saveUserWithDetailsByTransaction,
+  saveUserWithDetailsSeparately
+  } from '../lib/dboperations/user';
+
 export function configureRoutes(server: FastifyInstance) {
   server.get<{ Reply: IReply }>("/", async (request, reply) => {
     const userRepository = server.orm["typeorm"].getRepository(User);
@@ -27,43 +32,13 @@ export function configureRoutes(server: FastifyInstance) {
       // The `name` and `mail` types are automatically inferred
       const { name, email, password, nick, fullName } = request.body;
       try {
-        /*
-          const user = new User();
-          user.name = name;
-          user.email = email;
-          user.password = password;
-          const userRepository = server.orm["typeorm"].getRepository(User);
-          const result1 = await userRepository.save(user)
-
-          const userDetail = new UserDetail();
-          userDetail.nick = nick;
-          userDetail.fullName = fullName;
-          userDetail.user = user;
-          const userDetailRepository = server.orm["typeorm"].getRepository(UserDetail);
-          const result2 = await userDetailRepository.save(userDetail);
-        */
-        await server.orm["typeorm"].transaction(async (manager) => {
-          const user = new User();
-          user.name = name;
-          user.email = email;
-          user.password = password;
-          const savedUser = await manager.save(user);
-        
-          const userDetail = new UserDetail();
-          userDetail.nick = nick;
-          userDetail.fullName = fullName;
-          userDetail.user = savedUser;
-          const savedUserDetail = await manager.save(userDetail);
-          const result = {
-            ...savedUser,
-            ...savedUserDetail,
-          };
-          reply.status(201).send({
-            success: true,
-            data: {
-              users: [result],
-            },
-          });
+        //const result = await saveUserWithDetailsByTransaction(server, { name, email, password, nick, fullName });
+        const result = await saveUserWithDetailsSeparately(server, { name, email, password, nick, fullName });
+        reply.status(201).send({
+          success: true,
+          data: {
+            users: [result],
+          },
         });
       } catch (error) {
         reply.code(400).send({ error: error as string });
