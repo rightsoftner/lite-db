@@ -29,5 +29,5 @@ export class UserDetail {
 
   @OneToOne(() => User)
   @JoinColumn()
-  user: User
+  user!: User
 }
