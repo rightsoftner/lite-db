@@ -13,7 +13,7 @@ interface IReply {
   200: {
     success: boolean;
     data: {
-      users: UserType[];
+      users: ResponseUserType[];
     };
   };
 }
