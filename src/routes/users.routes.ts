@@ -6,15 +6,20 @@ import { IQuerystring, IReply, IdeleteReply } from "../lib/interfaces";
 
 import { 
   saveUserWithDetailsByTransaction,
-  saveUserWithDetailsSeparately
+  saveUserWithDetailsSeparately,
+  prepareResult,
   } from '../lib/dboperations/user';
 
 export function configureRoutes(server: FastifyInstance) {
   server.get<{ Reply: IReply }>("/", async (request, reply) => {
-    const userRepository = server.orm["typeorm"].getRepository(User);
-    const users = await userRepository.find();
-    reply.code(200).send({ success: true, data: { users } });
+    const userDetailRepository = server.orm["typeorm"].getRepository(UserDetail);
+    const details = await userDetailRepository.createQueryBuilder("user_detail")
+    .leftJoinAndSelect("user_detail.user", "user")
+    .getMany();
+    const result = details.map(<ResponseUserType>(detail: UserDetail) => prepareResult(detail.user, detail));
+    reply.code(200).send({ success: true, data: {users: result}});
   });
+
   server.post<{ Body: RequestBodyType; Reply: IReply }>(
     "/api/users",
     {
@@ -45,6 +50,7 @@ export function configureRoutes(server: FastifyInstance) {
       }
     }
   );
+  /*
   server.get<{ Querystring: IQuerystring; Reply: IReply }>(
     "/api/users",
     {
@@ -114,5 +120,5 @@ export function configureRoutes(server: FastifyInstance) {
         });
       }
     }
-  );
+  );*/
 }
