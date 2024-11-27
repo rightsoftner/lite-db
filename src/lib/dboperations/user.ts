@@ -7,6 +7,23 @@ import { UserDetail } from "../../db/entity/UserDetail.entity";
 
 import { ResponseUserType } from '../Type'
 
+
+export const prepareResult = (savedUser:User, savedUserDetail:UserDetail) => {
+  return {
+    user_id: savedUser.id,
+    name: savedUser.name,
+    email: savedUser.email,
+    password: savedUser.password,
+    u_created_at: savedUser.created_at,
+    u_updated_at: savedUser.updated_at,
+    udetail_id: savedUserDetail.id,
+    nick: savedUserDetail.nick,
+    fullName: savedUserDetail.fullName,
+    ud_created_at: savedUserDetail.created_at,
+    ud_updated_at: savedUserDetail.updated_at,
+  };
+}
+
 export const saveUserWithDetailsByTransaction = async <ResponseUserType>(server: FastifyInstance, { name, email, password, nick, fullName }: RequestBodyType)  =>
 {
   try {
@@ -22,11 +39,7 @@ export const saveUserWithDetailsByTransaction = async <ResponseUserType>(server:
       userDetail.fullName = fullName;
       userDetail.user = savedUser;
       const savedUserDetail = await manager.save(userDetail);
-      const result = {
-        ...savedUser,
-        ...savedUserDetail,
-      };
-      return result;
+      return prepareResult(savedUser, savedUserDetail);
     });
     return result;
   } catch (error) {
@@ -50,11 +63,7 @@ export const saveUserWithDetailsSeparately = async <ResponseUserType>(server: Fa
     userDetail.user = user;
     const userDetailRepository = server.orm["typeorm"].getRepository(UserDetail);
     const savedUserDetail = await userDetailRepository.save(userDetail);
-    const result = {
-      ...savedUser,
-      ...savedUserDetail,
-    };
-    return result;
+    return prepareResult(savedUser, savedUserDetail);
   } catch (error) {
     throw new Error(error as string);
   }
