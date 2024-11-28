@@ -1,7 +1,7 @@
 import plugin from "typeorm-fastify-plugin";
-import { User } from "./db/entity/User.entity";
-import { UserDetail } from "./db/entity/UserDetail.entity";
-import { Profile } from "./db/entity/Profile.entity";
+import { User } from "./db/entity/User/User.entity";
+import { UserDetail } from "./db/entity/User/UserDetail.entity";
+import { Profile } from "./db/entity/Profile/Profile.entity";
 import { FastifyInstance } from "fastify";
 
 export function configureDatabase(server: FastifyInstance) {
